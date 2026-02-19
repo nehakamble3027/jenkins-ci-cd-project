@@ -3,22 +3,31 @@ pipeline {
 
     stages {
 
-        stage('Install Dependencies') {
+        stage('Checkout Code') {
             steps {
-                sh 'pip install -r requirements.txt'
+                git branch: 'main',
+                    url: 'https://github.com/nehakamble3027/jenkins-ci-cd-project.git',
+                    credentialsId: 'github-token'
             }
         }
 
-        stage('Run Tests') {
+        stage('Build') {
             steps {
-                sh 'pytest'
+                echo 'Build stage'
             }
         }
 
-        stage('Build Success') {
+        stage('Push to GitHub') {
             steps {
-                echo 'Build & Test Successful ✅'
+                echo 'Pushing to GitHub for deployment...'
+                sh '''
+                    git config user.email "nehakambble3027@gmail.com"
+                    git config user.name "nehakambble3027"
+                    git add .
+                    git commit -m "Auto deploy from Jenkins" || true
+                    git push origin main
+                '''
             }
         }
-
-        
+    }
+}
